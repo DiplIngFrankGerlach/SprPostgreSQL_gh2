@@ -1,0 +1,72 @@
+Import 
+{
+   "Strings.ad", 
+   "ZKNuetzlich.ad", 
+   "System.ad",
+   "SQLWurzel.ad",
+   "PostgreSQL.ad",
+   "Banking.ad",
+   "AppMain.ad"
+}
+
+int Main::main()
+{
+   var Bank bank;
+   bank.readTransactions();
+ 
+   var String_16 amount("111.23");
+   var String_16 desc("old laptop");
+   bank.transferMoney(1000,1001,amount,desc);
+   return 1;
+
+ 
+   var PrintfClass pfc;
+   var PostgreSQLConnection pgc;
+   var String_16 vzk;
+   vzk.append("dbname=frank user=frank password=XXX host=di-fg.de");
+
+   if(pgc.connect(vzk) == 1)
+   {
+      for(var int i=0; i < 100; i++)
+      {
+          var String_16 befehl;
+          befehl.assign("insert into yourtable2 values(");
+          befehl.append(i+100);
+          befehl.append(",");
+          befehl.append("'wall');");
+          if( pgc.executeCommand(befehl) != 1)
+          {
+            pfc.fstr("executeCommand failed").pr();
+            return -1;
+          }
+      }
+      pgc.close();
+   }
+   for(var int i=0; i < 100; i++)
+   {
+      this.lauf();
+   } 
+   return 1;
+}
+
+void Main::lauf()
+{ 
+   var PrintfClass pfc;
+
+   var PostgreSQLConnection pgc;
+   var String_16 vzk;
+   vzk.append("dbname=frank user=frank password=XXX host=di-fg.de");
+   pgc.connect(vzk);
+
+   if(pgc.startQuery("select * from yourtable2") == 1)
+   {
+      while(pgc.select() == 1)
+      {
+         var int id = pgc.getInt(0);
+         var String_16 aName;
+         pgc.getString(1,aName);
+         pfc.fstr("$ $").sa(id).sa(aName).pr();
+      }
+   }
+}
+

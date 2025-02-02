@@ -1,0 +1,28 @@
+Import
+{
+  "Strings.ad",
+  "SQLWurzel.ad"
+}
+
+int SQLWurzel::connect(&String_16 connectString)
+{ return -1; }
+
+int SQLWurzel::startQuery(&char sqlCommand[])
+{ return -1; }
+     
+int SQLWurzel::select()
+{ return -1; }
+
+int SQLWurzel::getInt(int column)
+{ return -1; }
+
+
+void SQLWurzel::getString(int column,&String_16 value)
+{}
+
+int SQLWurzel::executeCommand(&String_16 command)
+{ return -1; }
+
+void SQLWurzel::close()
+{}
+ 

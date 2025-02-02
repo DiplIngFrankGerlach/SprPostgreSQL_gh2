@@ -1,0 +1,15 @@
+class Bank
+{
+  PostgreSQLConnection pgc;
+  PrintfClass pfc;
+methods:
+  Bank();
+
+  void readTransactions();
+
+  void transferMoney(int fromAccount, int toAccount, &String_16 amount, &String_16 description);
+
+  int checkSQLParam(&String_16 parameter);
+
+};
+

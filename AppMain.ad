@@ -1,0 +1,8 @@
+
+class Main
+{
+methods:
+   void lauf();
+   int main();
+
+};

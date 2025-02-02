@@ -1,0 +1,167 @@
+Import
+{
+  "Strings.ad",
+  "SQLWurzel.ad",
+  "PostgreSQL.ad"
+}
+
+PostgreSQLConnection::PostgreSQLConnection()
+{
+  inline_cpp[[
+    verbindung = NULL;
+    abfrageErgebnis = NULL;
+  ]]
+  anzZeilen = -1;
+  anzSpalten = -1;
+  aktuelleZeile = -1;
+
+}
+
+
+int PostgreSQLConnection::connect(&String_16 connectString)
+{
+  connectString.toCharArray(puffer); 
+  inline_cpp[[
+      verbindung = PQconnectdb(puffer._array);
+      if (PQstatus(verbindung) != CONNECTION_OK) 
+      {
+        std::cerr << "Connection to database failed: " << PQerrorMessage(verbindung) << std::endl;
+        PQfinish(verbindung);
+        verbindung = NULL;
+        return -1;
+      }
+  ]]
+  return 1;
+}
+
+int PostgreSQLConnection::startQuery(&String_16 sqlCommand)
+{
+   var char buffer[4096];
+   sqlCommand.toCharArray(buffer);
+   return this.startQuery(buffer);
+}
+
+int PostgreSQLConnection::startQuery(&char sqlCommand[])
+{
+  inline_cpp[[
+    if(verbindung == NULL)
+    {
+      return -1;
+    }
+    if(abfrageErgebnis != NULL)
+    {
+        PQclear(abfrageErgebnis);
+    } 
+    abfrageErgebnis = PQexec(verbindung, sqlCommand._array);
+    if (PQresultStatus(abfrageErgebnis) != PGRES_TUPLES_OK) 
+    {
+        std::cerr << "No data retrieved: " << PQerrorMessage(verbindung) << std::endl;
+        PQclear(abfrageErgebnis);
+        PQfinish(verbindung);
+        anzZeilen = -1;
+        anzSpalten = -1;
+        return -1;
+    }
+    anzZeilen  = PQntuples(abfrageErgebnis);
+    anzSpalten = PQnfields(abfrageErgebnis);
+    aktuelleZeile = -1;
+  ]]
+  return 1;
+}
+     
+int PostgreSQLConnection::select() 
+{
+   aktuelleZeile++;
+   if(aktuelleZeile < anzZeilen)
+   {
+     return 1;
+   }
+   return -1;
+}
+
+int PostgreSQLConnection::getInt(int column)
+{
+  this.getString(column,pufferStr);
+  return pufferStr.asNumber();
+}
+
+void PostgreSQLConnection::getString(int column,&String_16 value)
+{
+  if((column < 0) || (column >= anzSpalten))
+  {
+     value.assign("Spalten-Index zu gross");
+     return;
+  }
+  if((aktuelleZeile < 0) || (aktuelleZeile >= anzZeilen) )
+  {
+     value.assign("Zeilen-Index zu gross");
+     return;
+  }
+  value.clear();
+  inline_cpp[[
+     if(abfrageErgebnis == NULL)
+     {
+        std::cerr << "PostgreSQLConnection::getString() ohne vorhandene Abfrage" << std::endl;
+        return;
+     }
+     const char* zelle = PQgetvalue(abfrageErgebnis, aktuelleZeile, column);
+     char schnuller;
+     int zeiger = 0;
+     while(zelle[zeiger] != '\\0')
+     {
+        value.append(&schnuller,zelle[zeiger]);
+        zeiger++;
+     }
+  ]]
+}
+
+int PostgreSQLConnection::executeCommand(&char command[])
+{
+  inline_cpp[[
+    PGresult *res = PQexec(verbindung, command._array);
+
+    // Check if the SQL command was executed successfully
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) 
+    {
+        std::cerr << "Command " << command._array << "failed:" << PQerrorMessage(verbindung);
+        PQclear(res);
+        return -1;
+    }
+
+    // Clear the result
+    PQclear(res);
+  ]]
+  return 1;
+}
+
+int PostgreSQLConnection::executeCommand(&String_16 command)
+{
+  command.toCharArray(puffer); 
+  return this.executeCommand(puffer);
+}
+
+void PostgreSQLConnection::close()
+{ 
+  inline_cpp[[
+    if(abfrageErgebnis != NULL)
+    {
+       PQclear(abfrageErgebnis);
+       abfrageErgebnis = NULL;
+    }
+    if(verbindung != NULL)
+    {
+       PQfinish(verbindung);
+       verbindung = NULL;
+    }
+  ]]
+  anzSpalten    = -1;
+  anzZeilen     = -1;
+  aktuelleZeile = -1;
+  pufferStr.clear();
+  puffer[0] = '\0';
+}
+
+PostgreSQLConnection::~PostgreSQLConnection()
+{
+   this.close();
+}

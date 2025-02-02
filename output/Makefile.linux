@@ -1,0 +1,61 @@
+
+####################################################################
+#Sappeur 4.0 Makefile
+####################################################################
+
+#ls *cpp|sed "s/.cpp$/.o \\\\/g"
+OBJECTS= AppMain.o \
+determineStackMemoryNeeds.o \
+determStackMemory_AppMain.ai.o \
+determStackMemory_Hashtables.ai.o \
+determStackMemory_PostgreSQL.ai.o \
+determStackMemory_SQLWurzel.ai.o \
+determStackMemory_Strings.ai.o \
+determStackMemory_System.ai.o \
+determStackMemory_ZKNuetzlich.ai.o \
+determStackMemory_Banking.ai.o \
+Hashtables.o \
+placementNewClasses_AppMain.ai.o \
+placementNewClasses_Hashtables.ai.o \
+placementNewClasses_PostgreSQL.ai.o \
+placementNewClasses_SQLWurzel.ai.o \
+placementNewClasses_Strings.ai.o \
+placementNewClasses_System.ai.o \
+placementNewClasses_ZKNuetzlich.ai.o \
+placementNewClasses_Banking.ai.o \
+PostgreSQL.o \
+SQLWurzel.o \
+Strings.o \
+System.o \
+ZKNuetzlich.o  \
+Banking.o  \
+main.o \
+mapping.o
+
+
+
+
+CC = gcc
+HOMEDIR=/home/frank
+SPRDIR=${HOMEDIR}/Sappeur4x/ausg/haupt
+VPATH=${SPRDIR}/cppMapping:../
+
+INCLUDE= -I${SPRDIR}/cppMapping -I. -I..  -I/usr/include -I/usr/include/postgresql/ 
+
+
+
+LDLIBS=-lstdc++ -lm  -std=c++17 -lpq
+.SUFFIXES: .o .cpp .ai
+OPT=-g 
+MISC_OPT=-DSPR_USE_PTHREAD_MUTEX_LOCKS=1 -DLINUX_SAPPEUR=1 -DSPR_DEBUG=1 -DSPR_PTHREAD=1 -pthread
+
+.cpp.o:
+	$(CC) $(OPT) $(MISC_OPT) -DGCC_X86 $(INCLUDE) -c $<
+
+
+
+all:$(OBJECTS)
+	$(CC) $(OPT) $(MISC_OPT) -o pgTest $^ $(LDLIBS)
+	
+clean:
+	rm *.o pgTest

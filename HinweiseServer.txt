@@ -1,0 +1,7 @@
+
+
+Freischalten der IP
+  Eintragen in vi /var/lib/pgsql/data/pg_hba.conf
+
+Starten des Servers
+  sudo systemctl restart postgresql

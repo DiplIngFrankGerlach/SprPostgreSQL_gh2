@@ -1,0 +1,60 @@
+
+
+/***
+* Sappeur Hashtable 
+*
+* Key-Value Style
+  Keys and Values are stored as values, not pointers (may use pointers internally (RAII etc), though)
+  keys must implement getHashCode() and equals()
+
+  keyType type of the key entry
+  valueType type of the value entry
+  hashAC Hash Adapter Class
+  compareAC Comparison Adapter Class
+*/
+
+
+
+
+class dllexport_a SPHT_Entry_String_16_String_16
+    {
+         String_16 key;
+         String_16 value;
+         SPHT_Entry_String_16_String_16 * next;
+         int is_used; 
+        methods:
+         SPHT_Entry_String_16_String_16();
+
+    };
+    
+    class dllexport_a SPHT_String_16_String_16
+    {
+         *SPHT_Entry_String_16_String_16 _elements[];
+         int numberOfEntries;
+         int iterator_pos;
+         SPHT_Entry_String_16_String_16* iterator_next; 
+       methods:
+         SPHT_String_16_String_16();         
+
+         void insert(&String_16 key,&String_16 value);
+
+         int search(&String_16 key,&String_16 value);
+
+         void del(&String_16 key);
+
+         static void insertInternally(*SPHT_Entry_String_16_String_16 bins[],
+                                      &String_16 key,
+                                      &String_16 value);
+                    
+         void resetIterator();
+
+         int nextElem(&String_16 key,&String_16 value);
+
+         int size();
+
+         void clear();
+    };
+    
+
+
+

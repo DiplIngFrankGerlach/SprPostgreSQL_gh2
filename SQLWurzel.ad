@@ -1,0 +1,28 @@
+
+
+/* Die Wurzelklasse fuer SQL Verbindungen */
+class SQLWurzel
+{
+methods:
+    /* connect to the database server using the connection String */
+    int connect(&String_16 connectString);
+
+    /* start a query session with the given SQL statement */
+    int startQuery(&char sqlCommand[]);
+    
+    /* read one line of the query result set. return 1 if more results are there */ 
+    int select(); 
+
+    /*read an integer column of the current result line */
+    int getInt(int column);
+
+    /*read a String column of the current result line */
+    void getString(int column,&String_16 value);
+
+    /* execute a non-query command (insert, update, delete) */
+    int executeCommand(&String_16 command);
+
+    /* close the connection to the database */
+    void close();
+ 
+};

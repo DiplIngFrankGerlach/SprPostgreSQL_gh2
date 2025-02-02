@@ -1,0 +1,37 @@
+
+
+/* PostgreSQL Verbindung */
+class PostgreSQLConnection extends SQLWurzel
+{
+    inline_cpp[[
+       PGconn* verbindung;
+       PGresult* abfrageErgebnis;
+    ]]
+    int aktuelleZeile;
+    int anzZeilen;
+    int anzSpalten;
+    String_16 pufferStr;
+    char puffer[32768];
+methods:
+    PostgreSQLConnection();
+
+    int connect(&String_16 connectString);
+
+    int startQuery(&char sqlCommand[]);
+    int startQuery(&String_16 sqlCommand);
+     
+    int select(); 
+
+
+    int getInt(int column);
+
+    void getString(int column,&String_16 value);
+
+    int executeCommand(&String_16 command);
+    int executeCommand(&char command[]);
+
+    void close();
+
+    ~PostgreSQLConnection();
+ 
+};
