@@ -8,3 +8,5 @@ Download from https://sappeur.di-fg.de/Sappeur4.8_Linux_x64.tar.gz,
 Windows versions also available.
 
 Sappeur Programming Language Homepage: https://sappeur.di-fg.de/
+
+Author: Frank Gerlach
